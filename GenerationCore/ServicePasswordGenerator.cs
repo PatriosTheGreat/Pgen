@@ -10,7 +10,7 @@ namespace GenerationCore
     {
         public string UserPassword
         {
-            get
+            private get
             {
                 return _userPassword;
             }

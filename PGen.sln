@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerationCore", "Generatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTests", "CoreTests\CoreTests.csproj", "{C0D9399D-CDF2-4AB0-8652-27216B59DFD3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PgenWindowsClient", "PgenWindowsClient\PgenWindowsClient.csproj", "{406AAEE6-32D2-4738-87D7-4A51827B44F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C0D9399D-CDF2-4AB0-8652-27216B59DFD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0D9399D-CDF2-4AB0-8652-27216B59DFD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0D9399D-CDF2-4AB0-8652-27216B59DFD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{406AAEE6-32D2-4738-87D7-4A51827B44F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{406AAEE6-32D2-4738-87D7-4A51827B44F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{406AAEE6-32D2-4738-87D7-4A51827B44F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{406AAEE6-32D2-4738-87D7-4A51827B44F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
