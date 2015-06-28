@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,9 +43,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PasswordRestriction.cs" />
+    <Compile Include="SecurityStringHelper.cs" />
     <Compile Include="ServiceInformation.cs" />
     <Compile Include="ServicePasswordGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServicesManager\FileServiceManager.cs" />
+    <Compile Include="ServicesManager\IServicesManager.cs" />
+    <Compile Include="ServicesManager\TestServiceManager.cs" />
     <Compile Include="SymbolsTypeExtention.cs" />
     <Compile Include="SymbolsType.cs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Security;
 using GenerationCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -10,7 +11,8 @@ namespace CoreTests
         [TestInitialize]
         public void InitializeTest()
         {
-            _passwordGenerator.UserPassword = "qwerty";
+            _userPassword = new SecureString();
+            InitializeSecurityString("qwerty");
         }
 
         [TestMethod]
@@ -20,7 +22,8 @@ namespace CoreTests
                 "testService",
                 new PasswordRestriction(SymbolsType.LowcaseLatin));
 
-            var password = _passwordGenerator.GeneratePassword(serviceInfo);
+            var password =
+                ServicePasswordGenerator.GeneratePassword(serviceInfo, _userPassword);
 
             Assert.IsTrue(password.Length > 0);
         }
@@ -32,8 +35,10 @@ namespace CoreTests
                 "testService",
                 new PasswordRestriction(SymbolsType.LowcaseLatin));
 
-            var password = _passwordGenerator.GeneratePassword(serviceInfo);
-            var secondaryGenerated = _passwordGenerator.GeneratePassword(serviceInfo);
+            var password =
+                ServicePasswordGenerator.GeneratePassword(serviceInfo, _userPassword);
+            var secondaryGenerated =
+                ServicePasswordGenerator.GeneratePassword(serviceInfo, _userPassword);
 
             Assert.AreEqual(password, secondaryGenerated);
         }
@@ -45,10 +50,12 @@ namespace CoreTests
                 "testService",
                 new PasswordRestriction(SymbolsType.LowcaseLatin));
 
-            var password = _passwordGenerator.GeneratePassword(serviceInfo);
+            var password = 
+                ServicePasswordGenerator.GeneratePassword(serviceInfo, _userPassword);
 
-            _passwordGenerator.UserPassword = "otherPassword";
-            var otherPassword = _passwordGenerator.GeneratePassword(serviceInfo);
+            InitializeSecurityString("otherPassword");
+            var otherPassword = 
+                ServicePasswordGenerator.GeneratePassword(serviceInfo, _userPassword);
 
             Assert.AreNotEqual(password, otherPassword);
         }
@@ -60,14 +67,18 @@ namespace CoreTests
                 "testService",
                 new PasswordRestriction(SymbolsType.LowcaseLatin));
 
-            var password = _passwordGenerator.GeneratePassword(firstService);
+            var password = ServicePasswordGenerator.GeneratePassword(
+                firstService,
+                _userPassword);
 
             var secondService = new ServiceInformation(
                 "testService",
                 new PasswordRestriction(SymbolsType.LowcaseLatin));
 
-            var otherPassword = _passwordGenerator.GeneratePassword(secondService);
-
+            var otherPassword = ServicePasswordGenerator.GeneratePassword(
+                secondService,
+                _userPassword);
+            
             Assert.AreNotEqual(password, otherPassword);
         }
 
@@ -81,7 +92,9 @@ namespace CoreTests
                     SymbolsType.UpcaseLatin |
                     SymbolsType.Digital));
 
-            var password = _passwordGenerator.GeneratePassword(serviceWithLotSymbolTypes);
+            var password = ServicePasswordGenerator.GeneratePassword(
+                serviceWithLotSymbolTypes,
+                _userPassword);
 
             Assert.IsTrue(
                 SymbolsType.LowcaseLatin.GetSymbols().Any(symbol => password.Contains(symbol)));
@@ -91,6 +104,14 @@ namespace CoreTests
                 SymbolsType.Digital.GetSymbols().Any(symbol => password.Contains(symbol)));
         }
 
-        private readonly ServicePasswordGenerator _passwordGenerator = new ServicePasswordGenerator();
+        private static void InitializeSecurityString(string password)
+        {
+            foreach (var symbol in password)
+            {
+                _userPassword.AppendChar(symbol);
+            }
+        }
+
+        private static SecureString _userPassword;
     }
 }

@@ -1,33 +1,22 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace GenerationCore
 {
-    public sealed class ServicePasswordGenerator
+    public static class ServicePasswordGenerator
     {
-        public string UserPassword
-        {
-            private get
-            {
-                return _userPassword;
-            }
-
-            set
-            {
-                Contract.Assert(!string.IsNullOrWhiteSpace(value));
-                _userPassword = value;
-            }
-        }
-
-        public string GeneratePassword(ServiceInformation service)
+        public static string GeneratePassword(
+            ServiceInformation service,
+            SecureString userPassword)
         {
             Contract.Assert(service != null);
-            Contract.Assert(!string.IsNullOrWhiteSpace(UserPassword));
+            Contract.Assert(userPassword.Length > 0);
 
-            var passwordBasedNumbers = GetPasswordBasedNumbers(service);
+            var passwordBasedNumbers = GetPasswordBasedNumbers(service.UniqueToken, userPassword);
 
             var passwordLength = 
                 CalculatePasswordLength(
@@ -95,7 +84,9 @@ namespace GenerationCore
 
         private static SymbolsType TurnOffFlag(SymbolsType flags, SymbolsType flag) => flags & ~flag;
 
-        private static long CalculatePasswordLength(PasswordRestriction restriction, int randomNumber)
+        private static long CalculatePasswordLength(
+            PasswordRestriction restriction, 
+            int randomNumber)
         {
             var lowBounder = Math.Max(restriction.PasswordMinLength, restriction.AcceptedTypes.Count());
             var upperBounder = restriction.PasswordMaxLength;
@@ -104,16 +95,14 @@ namespace GenerationCore
             return upperBounder - randomNumber % (upperBounder - middleBounder);
         }
 
-        private byte[] GetPasswordBasedNumbers(ServiceInformation service) =>
-            SHA512.Create().ComputeHash(StringToBytes(_userPassword + service.UniqueToken));
-        
-        private static byte[] StringToBytes(string str)
+        private static byte[] GetPasswordBasedNumbers(
+            string serviceToken, 
+            SecureString userPassword)
         {
-            var bytes = new byte[str.Length * sizeof(char)];
-            Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
+            var userPasswordBytes = userPassword.ToByteArray();
+            var tokenBytes = Encoding.UTF8.GetBytes(serviceToken);
+            
+            return SHA512.Create().ComputeHash(userPasswordBytes.Concat(tokenBytes).ToArray());
         }
-
-        private string _userPassword;
     }
 }
