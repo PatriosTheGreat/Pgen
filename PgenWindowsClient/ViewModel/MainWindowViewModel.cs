@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Security;
 using System.Windows;
 using System.Windows.Input;
 using GenerationCore;
@@ -11,16 +10,11 @@ namespace PgenWindowsClient.ViewModel
 {
     public sealed class MainWindowViewModel : ViewModelBase
     {
-        public MainWindowViewModel(
-            IServicesManager servicesManager)
+        public MainWindowViewModel(IServicesManager servicesManager)
         {
-            _services = new ObservableCollection<ServiceInformation>(
-                servicesManager.LoadServices());
+            _services = new ObservableCollection<ServiceInformation>(servicesManager.LoadServices());
 
-            _services.CollectionChanged += (sender, args) =>
-            {
-                OnPropertyChanged("FilteredServices");
-            };
+            _services.CollectionChanged += (sender, args) => { OnPropertyChanged(); };
 
             GenerateServicePassword = new LambdaCommand(
                 parameter =>
@@ -40,11 +34,7 @@ namespace PgenWindowsClient.ViewModel
                     passwordProvider.Clear();
                 });
 
-            CopyServicePassword = new LambdaCommand(
-                _ =>
-                {
-                    Clipboard.SetText(SelectedServicePassword);
-                });
+            CopyServicePassword = new LambdaCommand(_ => { Clipboard.SetText(SelectedServicePassword); });
         }
 
         public ICommand CopyServicePassword
@@ -96,8 +86,6 @@ namespace PgenWindowsClient.ViewModel
                 OnPropertyChanged();
             }
         }
-
-        public SecureString UserPassword { get; private set; }
 
         public string SelectedServicePassword
         {
