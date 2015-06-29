@@ -1,0 +1,54 @@
+﻿<Page x:Class="PgenWindowsClient.View.AddServiceView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:system="clr-namespace:System;assembly=mscorlib"
+      xmlns:pgenWindowsClient="clr-namespace:PgenWindowsClient"
+      mc:Ignorable="d" 
+      Height="{StaticResource DefaultPageHeight}" 
+      Width="{StaticResource DefaultPageWidth}"
+      Title="AddServiceView">
+    <Page.Resources>
+        <ResourceDictionary>
+            <system:Double x:Key="LabelsWidth">180</system:Double>
+        </ResourceDictionary>
+    </Page.Resources>
+    <Grid Margin="10" IsSharedSizeScope="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" HorizontalAlignment="Center" FontSize="16">Fill service password restrictions</Label>
+        
+        <StackPanel Grid.Row="1" Margin="10">
+            <StackPanel Orientation="Horizontal">
+                <Label Width="{StaticResource LabelsWidth}">Service name:</Label>
+                <TextBox Width="150" Text="{Binding ServiceName}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <Label Width="{StaticResource LabelsWidth}">Minimal password size:</Label>
+                <TextBox Width="150" Text="{Binding PasswordMinBounder}" pgenWindowsClient:Masking.Mask="^[1-9]\d{0,2}$" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <Label Width="{StaticResource LabelsWidth}">Maximum password size:</Label>
+                <TextBox Width="150" Text="{Binding PasswordMaxBounder}" pgenWindowsClient:Masking.Mask="^[1-9]\d{0,2}$" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <Label Width="{StaticResource LabelsWidth}">Allow low latin:</Label>
+                <CheckBox VerticalAlignment="Center" IsChecked="{Binding AllowLowLatin, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <Label Width="{StaticResource LabelsWidth}">Allow upper latin:</Label>
+                <CheckBox VerticalAlignment="Center" IsChecked="{Binding AllowUpperLatin, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Command="{Binding Submit}"  Height="30" Width="60" Margin="0,0,10,0">Submit</Button>
+            <Button Command="{Binding Cancel}" Height="30" Width="60" Margin="0,0,40,0">Cancel</Button>
+        </StackPanel>
+    </Grid>
+</Page>

@@ -30,7 +30,7 @@ namespace GenerationCore
         [DataMember]
         public SymbolsType AcceptedTypes { get; private set; }
 
-        private const int PasswordMinBounder = 3;
-        private const int PasswordMaxBounder = 25;
+        public const int PasswordMinBounder = 3;
+        public const int PasswordMaxBounder = 25;
     }
 }

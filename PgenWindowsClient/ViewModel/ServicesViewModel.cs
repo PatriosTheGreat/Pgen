@@ -8,10 +8,13 @@ using GenerationCore.ServicesManager;
 
 namespace PgenWindowsClient.ViewModel
 {
-    public sealed class MainWindowViewModel : ViewModelBase
+    public sealed class ServicesViewModel : ViewModelBase
     {
-        public MainWindowViewModel(IServicesManager servicesManager)
+        public ServicesViewModel(
+            IServicesManager servicesManager,
+            IPageNavigator pageNavigator)
         {
+            _pageNavigator = pageNavigator;
             _services = new ObservableCollection<ServiceInformation>(servicesManager.LoadServices());
 
             _services.CollectionChanged += (sender, args) => { OnPropertyChanged(); };
@@ -35,6 +38,19 @@ namespace PgenWindowsClient.ViewModel
                 });
 
             CopyServicePassword = new LambdaCommand(_ => { Clipboard.SetText(SelectedServicePassword); });
+
+            NavigateToAddService = new LambdaCommand(_ => { _pageNavigator.NavigateToAddServicePage(); });
+        }
+
+        public ICommand NavigateToAddService
+        {
+            get { return _navigateToAddService; }
+
+            set
+            {
+                _navigateToAddService = value;
+                OnPropertyChanged();
+            }
         }
 
         public ICommand CopyServicePassword
@@ -115,5 +131,7 @@ namespace PgenWindowsClient.ViewModel
         private string _nameFilter;
         private ICommand _generateServicePassword;
         private ICommand _copyServicePassword;
+        private readonly IPageNavigator _pageNavigator;
+        private ICommand _navigateToAddService;
     }
 }
