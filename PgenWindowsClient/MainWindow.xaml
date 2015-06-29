@@ -4,6 +4,7 @@
         Title="Pgen" 
         Loaded="MainWindow_OnLoaded"
         Height="{StaticResource DefaultHeight}" 
-        Width="{StaticResource DefaultPageWidth}">
+        Width="{StaticResource DefaultPageWidth}"
+        Icon="ApplicationIcon.png">
     <Frame Name="MainFrame" Width="{StaticResource DefaultPageWidth}" Height="{StaticResource DefaultPageHeight}" NavigationUIVisibility="Hidden" />
 </Window>
