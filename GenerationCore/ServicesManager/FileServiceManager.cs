@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -9,6 +10,8 @@ namespace GenerationCore.ServicesManager
     {
         public FileServiceManager(string servicesFileName)
         {
+            Contract.Assert(!string.IsNullOrWhiteSpace(servicesFileName));
+
             _servicesFileName = servicesFileName;
             _serializer = new DataContractSerializer(typeof(List<ServiceInformation>));
 
@@ -17,6 +20,8 @@ namespace GenerationCore.ServicesManager
 
         public void SaveService(ServiceInformation service)
         {
+            Contract.Assert(service != null);
+
             _services.Add(service);
             SaveServicesToFile();
         }

@@ -47,8 +47,8 @@
         </StackPanel>
         
         <StackPanel Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button Command="{Binding Submit}"  Height="30" Width="60" Margin="0,0,10,0">Submit</Button>
-            <Button Command="{Binding Cancel}" Height="30" Width="60" Margin="0,0,40,0">Cancel</Button>
+            <Button Command="{Binding Submit}"  Height="30" Width="80" Margin="0,0,10,0">Submit</Button>
+            <Button Command="{Binding Cancel}" Height="30" Width="80" Margin="0,0,40,0">Cancel</Button>
         </StackPanel>
     </Grid>
 </Page>

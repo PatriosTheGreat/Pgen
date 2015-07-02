@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Threading;
+﻿using System.Windows;
 using GenerationCore.ServicesManager;
 using Microsoft.Practices.Unity;
 using PgenWindowsClient.View;

@@ -5,10 +5,22 @@
              xmlns:converters="clr-namespace:PgenWindowsClient.Converters"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <system:Double x:Key="DefaultWidth">550</system:Double>
-        <system:Double x:Key="DefaultHeight">358</system:Double>
-        <system:Double x:Key="DefaultPageWidth">530</system:Double>
-        <system:Double x:Key="DefaultPageHeight">320</system:Double>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <ResourceDictionary>
+            <Color x:Key="MainColor">#FF595959</Color>
+            <LinearGradientBrush x:Key="WindowBackgroundBrush" StartPoint="0.7,0.042" EndPoint="0.5,0.971">
+                <GradientStop Color="{StaticResource MainColor}" Offset="0.0" />
+                <GradientStop Color="#FF333333" Offset="0.9" />
+            </LinearGradientBrush>
+            <system:Double x:Key="DefaultWidth">550</system:Double>
+            <system:Double x:Key="DefaultHeight">358</system:Double>
+            <system:Double x:Key="DefaultPageWidth">530</system:Double>
+            <system:Double x:Key="DefaultPageHeight">320</system:Double>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/MetroDark/MetroDark.MSControls.Core.Implicit.xaml" />
+                <ResourceDictionary Source="Themes/MetroDark/MetroDark.MSControls.Toolkit.Implicit.xaml" />
+                <ResourceDictionary Source="Themes/MetroDark/Theme.Colors.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

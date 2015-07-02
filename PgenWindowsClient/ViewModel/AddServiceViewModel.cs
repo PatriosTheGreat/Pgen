@@ -34,11 +34,29 @@ namespace PgenWindowsClient.ViewModel
             ServiceName = "DefaultName";
             PasswordMinBounder = PasswordRestriction.PasswordMinBounder;
             PasswordMaxBounder = PasswordRestriction.PasswordMaxBounder;
+            AllowLowLatin = true;
+            AllowUpperLatin = true;
         }
 
-        public bool AllowLowLatin { get; private set; }
+        public bool AllowLowLatin
+        {
+            get { return _allowLowLatin; }
+            private set
+            {
+                _allowLowLatin = value; 
+                OnPropertyChanged();
+            }
+        }
 
-        public bool AllowUpperLatin { get; private set; }
+        public bool AllowUpperLatin
+        {
+            get { return _allowUpperLatin; }
+            private set
+            {
+                _allowUpperLatin = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string ServiceName
         {
@@ -119,5 +137,7 @@ namespace PgenWindowsClient.ViewModel
         private string _serviceName;
         private int _passwordMinBounder;
         private int _passwordMaxBounder;
+        private bool _allowLowLatin;
+        private bool _allowUpperLatin;
     }
 }

@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Pgen" 
         Loaded="MainWindow_OnLoaded"
+        Background="{StaticResource WindowBackgroundBrush}"
         Height="{StaticResource DefaultHeight}" 
         Width="{StaticResource DefaultPageWidth}"
         Icon="ApplicationIcon.png">

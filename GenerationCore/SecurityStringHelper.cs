@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.Contracts;
+using System.Runtime.InteropServices;
 using System.Security;
 
 namespace GenerationCore
@@ -7,6 +8,8 @@ namespace GenerationCore
     {
         public static byte[] ToByteArray(this SecureString str)
         {
+            Contract.Assert(str != null);
+
             var unmanagedBytes = Marshal.SecureStringToGlobalAllocUnicode(str);
             byte[] result;
             try
