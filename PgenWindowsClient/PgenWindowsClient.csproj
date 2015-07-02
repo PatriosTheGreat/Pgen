@@ -174,15 +174,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="ApplicationIcon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Themes\MetroDark\HowToApplyTheme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ApplicationIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ApplicationIcon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Themes\MetroDark\HowToApplyTheme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
