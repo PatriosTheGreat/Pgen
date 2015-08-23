@@ -11,8 +11,7 @@ namespace GenerationCore
            int passwordMinLength = PasswordMinBounder,
            int passwordMaxLength = PasswordMaxBounder)
         {
-            Contract.Assert(passwordMinLength >= PasswordMinBounder);
-            Contract.Assert(passwordMaxLength <= PasswordMaxBounder);
+            Contract.Assert(passwordMinLength > 0);
             Contract.Assert(passwordMaxLength > passwordMinLength);
             Contract.Assert(acceptedTypes.Count() < passwordMaxLength);
 

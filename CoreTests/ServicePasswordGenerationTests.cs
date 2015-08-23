@@ -104,6 +104,27 @@ namespace CoreTests
                 SymbolsType.Digital.GetSymbols().Any(symbol => password.Contains(symbol)));
         }
 
+        [TestMethod]
+        public void LongPasswordShouldBeSuccessfulGenerated()
+        {
+
+            var serviceWithLotSymbolTypes = new ServiceInformation(
+                "testService",
+                new PasswordRestriction(
+                    SymbolsType.LowcaseLatin |
+                    SymbolsType.UpcaseLatin |
+                    SymbolsType.Digital,
+                    passwordMinLength: 2000,
+                    passwordMaxLength: 3000));
+
+            var password = ServicePasswordGenerator.GeneratePassword(
+                serviceWithLotSymbolTypes,
+                _userPassword);
+            
+            Assert.IsTrue(password.Length > 2000);
+            Assert.IsTrue(password.Length <= 3000);
+        }
+
         private static void InitializeSecurityString(string password)
         {
             foreach (var symbol in password)

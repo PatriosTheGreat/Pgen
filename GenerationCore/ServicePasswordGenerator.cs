@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Security;
@@ -23,7 +24,10 @@ namespace GenerationCore
                     restriction: service.Restriction, 
                     randomNumber: passwordBasedNumbers.First());
 
-            var randomNumbers = passwordBasedNumbers.Skip(1).ToArray();
+            var randomNumbers = GetRandomNumbersFromPasswordBasedNumbers(
+                2 * passwordLength, 
+                passwordBasedNumbers.Skip(1).ToArray());
+
             var mandatoryPartNumbersCount = randomNumbers.Length/2;
             var mandatoryPartNumbers = randomNumbers.Take(mandatoryPartNumbersCount).ToArray();
             
@@ -44,7 +48,7 @@ namespace GenerationCore
 
             return resultPassword;
         }
-
+        
         private static string GenerateRestPart(
             SymbolsType acceptedTypes, 
             byte[] restPartNumbers, 
@@ -93,6 +97,21 @@ namespace GenerationCore
             var middleBounder = (upperBounder - lowBounder) / 2;
 
             return upperBounder - randomNumber % (upperBounder - middleBounder);
+        }
+
+        private static byte[] GetRandomNumbersFromPasswordBasedNumbers(
+            long necessaryCount,
+            byte[] passwordBasedNumbers)
+        {
+            var byteArrays = new List<byte[]> { passwordBasedNumbers };
+
+            var shaHasher = SHA512.Create();
+            while (byteArrays.Sum(array => array.Length) < necessaryCount)
+            {
+                byteArrays.Add(shaHasher.ComputeHash(byteArrays.Last()));
+            }
+
+            return byteArrays.SelectMany(array => array).ToArray();
         }
 
         private static byte[] GetPasswordBasedNumbers(
