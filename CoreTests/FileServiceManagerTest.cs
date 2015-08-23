@@ -58,6 +58,30 @@ namespace CoreTests
             Assert.IsTrue(loadedServices.Any(loadedService => loadedService.UniqueToken == service.UniqueToken));
         }
 
+        [TestMethod]
+        public void ServiceShouldNotExistsAfterDelete()
+        {
+            var service = new ServiceInformation(
+                "TestService",
+                new PasswordRestriction(SymbolsType.Digital));
+
+            var serviceToRemove = new ServiceInformation(
+                "TestServiceAfter",
+                new PasswordRestriction(SymbolsType.Digital));
+            
+            _servicesManager.SaveService(service);
+            _servicesManager.SaveService(serviceToRemove);
+            
+            var loadedServices = _servicesManager.LoadServices().ToArray();
+            Assert.AreEqual(loadedServices.Count(), 2);
+
+            _servicesManager.DeleteService(serviceToRemove.UniqueToken);
+
+            loadedServices = _servicesManager.LoadServices().ToArray();
+            Assert.AreEqual(loadedServices.Count(), 1);
+            Assert.AreEqual(loadedServices.Single().UniqueToken, service.UniqueToken);
+        }
+
         private const string TestFileName = "TestServicesFile";
         private readonly FileServiceManager _servicesManager = new FileServiceManager(TestFileName);
     }

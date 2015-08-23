@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using GenerationCore;
 using GenerationCore.ServicesManager;
@@ -16,8 +16,14 @@ namespace PgenWindowsClient.ViewModel
         {
             _pageNavigator = pageNavigator;
             _services = new ObservableCollection<ServiceInformation>(servicesManager.LoadServices());
+            _servicesListView = CollectionViewSource.GetDefaultView(_services);
+            _servicesListView.Filter = FilterByNameFilter;
 
-            _services.CollectionChanged += (sender, args) => { OnPropertyChanged(); };
+            _services.CollectionChanged += (sender, args) =>
+            {
+                _servicesListView.Refresh();
+                OnPropertyChanged();
+            };
 
             GenerateServicePassword = new LambdaCommand(
                 parameter =>
@@ -40,6 +46,14 @@ namespace PgenWindowsClient.ViewModel
             CopyServicePassword = new LambdaCommand(_ => { Clipboard.SetText(SelectedServicePassword); });
 
             NavigateToAddService = new LambdaCommand(_ => { _pageNavigator.NavigateToAddServicePage(); });
+
+            DeleteSelectedService = new LambdaCommand(_ =>
+            {
+                servicesManager.DeleteService(SelectedService.UniqueToken);
+                _services.Remove(SelectedService);
+                SelectedService = null;
+                OnPropertyChanged();
+            });
         }
 
         public ICommand NavigateToAddService
@@ -49,6 +63,17 @@ namespace PgenWindowsClient.ViewModel
             set
             {
                 _navigateToAddService = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand DeleteSelectedService
+        {
+            get { return _deleteSelectedService; }
+
+            set
+            {
+                _deleteSelectedService = value;
                 OnPropertyChanged();
             }
         }
@@ -75,21 +100,7 @@ namespace PgenWindowsClient.ViewModel
             }
         }
 
-        public IEnumerable<ServiceInformation> FilteredServices
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(NameFilter))
-                {
-                    return _services.ToArray();
-                }
-
-                return 
-                    _services
-                        .Where(service => service.ServiceName.ToLower().Contains(NameFilter))
-                        .ToArray();
-            }
-        }
+        public ICollectionView FilteredServices => _servicesListView;
 
         public ServiceInformation SelectedService
         {
@@ -120,11 +131,23 @@ namespace PgenWindowsClient.ViewModel
             set
             {
                 _nameFilter = value.ToLower();
+                _servicesListView.Refresh();
                 OnPropertyChanged();
-                OnPropertyChanged("FilteredServices");
             }
         }
-        
+
+        private bool FilterByNameFilter(object serviceObject)
+        {
+            if (string.IsNullOrEmpty(NameFilter))
+            {
+                return true;
+            }
+
+            var service = serviceObject as ServiceInformation;
+            return service.ServiceName.ToLower().Contains(NameFilter);
+        }
+
+        private readonly ICollectionView _servicesListView;
         private readonly ObservableCollection<ServiceInformation> _services;
         private ServiceInformation _selectedService;
         private string _selectedServicePassword;
@@ -133,5 +156,6 @@ namespace PgenWindowsClient.ViewModel
         private ICommand _copyServicePassword;
         private readonly IPageNavigator _pageNavigator;
         private ICommand _navigateToAddService;
+        private ICommand _deleteSelectedService;
     }
 }

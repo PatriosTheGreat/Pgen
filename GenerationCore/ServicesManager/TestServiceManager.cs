@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace GenerationCore.ServicesManager
 {
@@ -38,6 +39,11 @@ namespace GenerationCore.ServicesManager
         public void SaveService(ServiceInformation service)
         {
             _services.Add(service);
+        }
+
+        public void DeleteService(string serviceToken)
+        {
+            _services.Remove(_services.Single(x => x.UniqueToken == serviceToken));
         }
 
         public IEnumerable<ServiceInformation> LoadServices()

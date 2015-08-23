@@ -6,6 +6,8 @@ namespace GenerationCore.ServicesManager
     {
         void SaveService(ServiceInformation service);
 
+        void DeleteService(string serviceToken);
+
         IEnumerable<ServiceInformation> LoadServices();
     }
 }

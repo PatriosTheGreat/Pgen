@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,15 @@ namespace GenerationCore.ServicesManager
             _services.Add(service);
             SaveServicesToFile();
         }
-        
+
+        public void DeleteService(string serviceToken)
+        {
+            Contract.Assert(!string.IsNullOrWhiteSpace(serviceToken));
+            
+            _services.RemoveAt(_services.FindIndex(information => information.UniqueToken == serviceToken));
+            SaveServicesToFile();
+        }
+
         public IEnumerable<ServiceInformation> LoadServices()
         {
             if (!File.Exists(_servicesFileName))
@@ -43,7 +52,8 @@ namespace GenerationCore.ServicesManager
 
         private void SaveServicesToFile()
         {
-            using (var fileStream = new FileStream(_servicesFileName, FileMode.OpenOrCreate))
+            File.WriteAllText(_servicesFileName, string.Empty);
+            using (var fileStream = new FileStream(_servicesFileName, FileMode.Create))
             {
                 _serializer.WriteObject(fileStream, _services.ToArray());
             }

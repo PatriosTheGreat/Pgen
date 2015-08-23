@@ -11,7 +11,7 @@
       Title="Services">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="270" />
+            <ColumnDefinition Width="320" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -27,7 +27,7 @@
             Grid.Column="0" 
             Margin="0,20,0,0" 
             HorizontalAlignment="Left"
-            Width="270" 
+            Width="320" 
             Grid.Row="1" 
             ItemsSource="{Binding FilteredServices}"
             SelectedItem="{Binding SelectedService, Mode=TwoWay}">
@@ -45,6 +45,18 @@
             HorizontalAlignment="Left" 
             Content="Add new service" 
             Command="{Binding NavigateToAddService}" />
+        <Button
+            Grid.Column="0"
+            Grid.Row="2" 
+            Content="Delete service" 
+            HorizontalAlignment="Right"
+            Height="25"
+            Width="150"
+            Visibility="{Binding SelectedService,
+                Converter={StaticResource BoolToVisibilityConverter}}"
+            Command="{Binding DeleteSelectedService}">
+            
+        </Button>
         <StackPanel
             Margin="10,20,15,0" 
             Grid.Row="1" 
