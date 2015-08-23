@@ -40,7 +40,7 @@ namespace GenerationCore
             var resultPassword = mandatoryPart + restPart;
 
             Contract.Assume(resultPassword.Length > service.Restriction.PasswordMinLength);
-            Contract.Assume(resultPassword.Length < service.Restriction.PasswordMaxLength);
+            Contract.Assume(resultPassword.Length <= service.Restriction.PasswordMaxLength);
 
             return resultPassword;
         }
