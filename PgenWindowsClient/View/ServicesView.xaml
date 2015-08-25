@@ -64,7 +64,14 @@
             <StackPanel Visibility="{Binding SelectedService,
                 Converter={StaticResource BoolToVisibilityConverter}}">
                 <Label FontSize="14">User password:</Label>
-                <PasswordBox x:Name="UserPassword" />
+                <PasswordBox x:Name="UserPassword">
+                    <PasswordBox.InputBindings>
+                        <KeyBinding 
+                            Command="{Binding Path=GenerateServicePassword}" 
+                            CommandParameter="{Binding ElementName=This}"
+                            Key="Enter" />
+                    </PasswordBox.InputBindings>
+                </PasswordBox>
                 <Button Margin="0,10,0,0"
                         Command="{Binding GenerateServicePassword}"
                         CommandParameter="{Binding ElementName=This}">Generate</Button>
