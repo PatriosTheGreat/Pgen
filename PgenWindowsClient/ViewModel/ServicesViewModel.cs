@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -15,8 +17,8 @@ namespace PgenWindowsClient.ViewModel
             IPageNavigator pageNavigator)
         {
             _pageNavigator = pageNavigator;
-            _services = new ObservableCollection<ServiceInformation>(servicesManager.LoadServices());
-            _servicesListView = CollectionViewSource.GetDefaultView(_services);
+            ResetServices(servicesManager.LoadServices());
+
             _servicesListView.Filter = FilterByNameFilter;
 
             _services.CollectionChanged += (sender, args) =>
@@ -54,6 +56,21 @@ namespace PgenWindowsClient.ViewModel
                 SelectedService = null;
                 OnPropertyChanged();
             });
+
+            servicesManager.ServicesUpdated += () =>
+            {
+                ResetServices(servicesManager.LoadServices());
+
+                if (SelectedService != null && 
+                    _services.SingleOrDefault(
+                        service => 
+                            service.UniqueToken == SelectedService.UniqueToken) == null)
+                {
+                    SelectedService = null;
+                }
+
+                OnPropertyChanged();
+            };
         }
 
         public ICommand NavigateToAddService
@@ -100,7 +117,16 @@ namespace PgenWindowsClient.ViewModel
             }
         }
 
-        public ICollectionView FilteredServices => _servicesListView;
+        public ICollectionView FilteredServices
+        {
+            get { return _servicesListView; }
+
+            set
+            {
+                _servicesListView = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ServiceInformation SelectedService
         {
@@ -136,6 +162,13 @@ namespace PgenWindowsClient.ViewModel
             }
         }
 
+        private void ResetServices(IEnumerable<ServiceInformation> newServices)
+        {
+            _services = new ObservableCollection<ServiceInformation>(newServices);
+
+            FilteredServices = CollectionViewSource.GetDefaultView(_services);
+        }
+
         private bool FilterByNameFilter(object serviceObject)
         {
             if (string.IsNullOrEmpty(NameFilter))
@@ -147,8 +180,8 @@ namespace PgenWindowsClient.ViewModel
             return service.ServiceName.ToLower().Contains(NameFilter);
         }
 
-        private readonly ICollectionView _servicesListView;
-        private readonly ObservableCollection<ServiceInformation> _services;
+        private ICollectionView _servicesListView;
+        private ObservableCollection<ServiceInformation> _services;
         private ServiceInformation _selectedService;
         private string _selectedServicePassword;
         private string _nameFilter;

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Threading;
 using GenerationCore;
 using GenerationCore.ServicesManager;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,10 +10,12 @@ namespace CoreTests
     [TestClass]
     public class FileServiceManagerTest
     {
-        [TestCleanup]
-        public void CleanupTest()
+        [TestInitialize]
+        public void Initialize()
         {
             File.Delete(TestFileName);
+            File.Delete(OtherFileName);
+            _servicesManager = new FileServiceManager(TestFileName);
         }
 
         [TestMethod]
@@ -24,65 +27,107 @@ namespace CoreTests
         [TestMethod]
         public void ServicesShouldBeLoadedAfterSaving()
         {
-            var service = new ServiceInformation(
-                "TestService",
-                new PasswordRestriction(SymbolsType.Digital));
-
-            _servicesManager.SaveService(service);
+            _servicesManager.SaveService(_defaultService);
 
             var loadedServices = _servicesManager.LoadServices().ToArray();
 
             Assert.AreEqual(1, loadedServices.Count());
-            Assert.AreEqual(service.UniqueToken, loadedServices.First().UniqueToken);
+            Assert.AreEqual(_defaultService.UniqueToken, loadedServices.First().UniqueToken);
         }
 
         [TestMethod]
         public void ManagerShouldLoadExistsServicesBeforeSave()
         {
-            var service = new ServiceInformation(
-                "TestService",
-                new PasswordRestriction(SymbolsType.Digital));
-
-            var serviceAfter = new ServiceInformation(
-                "TestServiceAfter",
-                new PasswordRestriction(SymbolsType.Digital));
-
-            _servicesManager.SaveService(service);
+            _servicesManager.SaveService(_defaultService);
 
             var anotherServiceManager = new FileServiceManager(TestFileName);
-            anotherServiceManager.SaveService(serviceAfter);
+            anotherServiceManager.SaveService(_otherService);
 
             var loadedServices = anotherServiceManager.LoadServices().ToArray();
 
             Assert.AreEqual(loadedServices.Count(), 2);
-            Assert.IsTrue(loadedServices.Any(loadedService => loadedService.UniqueToken == service.UniqueToken));
+            Assert.IsTrue(loadedServices.Any(
+                loadedService => loadedService.UniqueToken == _defaultService.UniqueToken));
         }
 
         [TestMethod]
         public void ServiceShouldNotExistsAfterDelete()
         {
-            var service = new ServiceInformation(
-                "TestService",
-                new PasswordRestriction(SymbolsType.Digital));
-
-            var serviceToRemove = new ServiceInformation(
-                "TestServiceAfter",
-                new PasswordRestriction(SymbolsType.Digital));
-            
-            _servicesManager.SaveService(service);
-            _servicesManager.SaveService(serviceToRemove);
+            _servicesManager.SaveService(_defaultService);
+            _servicesManager.SaveService(_otherService);
             
             var loadedServices = _servicesManager.LoadServices().ToArray();
             Assert.AreEqual(loadedServices.Count(), 2);
 
-            _servicesManager.DeleteService(serviceToRemove.UniqueToken);
+            _servicesManager.DeleteService(_otherService.UniqueToken);
 
             loadedServices = _servicesManager.LoadServices().ToArray();
             Assert.AreEqual(loadedServices.Count(), 1);
-            Assert.AreEqual(loadedServices.Single().UniqueToken, service.UniqueToken);
+            Assert.AreEqual(loadedServices.Single().UniqueToken, _defaultService.UniqueToken);
         }
 
+        [TestMethod]
+        public void FileManagerShouldBeEmptyAfterSetNewFile()
+        {
+            _servicesManager.SaveService(_defaultService);
+            _servicesManager.SetFile(OtherFileName);
+
+            var loadedServices = _servicesManager.LoadServices().ToArray();
+            Assert.AreEqual(loadedServices.Count(), 0);
+        }
+
+        [TestMethod]
+        public void FileManagerShouldLoadExistsServicesOnNewFile()
+        {
+            _servicesManager.SaveService(_defaultService);
+            _servicesManager.SetFile(OtherFileName);
+            _servicesManager.SetFile(TestFileName);
+
+            var loadedServices = _servicesManager.LoadServices().ToArray();
+            Assert.AreEqual(loadedServices.Single().UniqueToken, _defaultService.UniqueToken);
+        }
+
+        [TestMethod]
+        public void FileManagerShouldLoadNewServicesAfter()
+        {
+            var otherServiceManager = new FileServiceManager(TestFileName);
+            
+            _servicesManager.SaveService(_otherService);
+            otherServiceManager.SaveService(_defaultService);
+
+            var loadedServices = otherServiceManager.LoadServices().ToArray();
+            Assert.AreEqual(loadedServices.Length, 2);
+            Assert.IsTrue(loadedServices.Any(service  => service .UniqueToken == _defaultService.UniqueToken));
+        }
+
+        [TestMethod]
+        public void FileManagerShouldRiseChangeEventIfFileChanges()
+        {
+            var isEventRose = false;
+            _servicesManager.SaveService(_otherService);
+
+            _servicesManager.ServicesUpdated += () =>
+            {
+                isEventRose = true;
+            };
+
+            File.WriteAllText(TestFileName, string.Empty);
+
+            Thread.Sleep(1000);
+
+            Assert.IsTrue(isEventRose);
+        }
+
+        private readonly ServiceInformation _defaultService = new ServiceInformation(
+            "TestService",
+            new PasswordRestriction(SymbolsType.Digital));
+
+        private readonly ServiceInformation _otherService = new ServiceInformation(
+                "TestServiceAfter",
+                new PasswordRestriction(SymbolsType.Digital));
+
         private const string TestFileName = "TestServicesFile";
-        private readonly FileServiceManager _servicesManager = new FileServiceManager(TestFileName);
+        private const string OtherFileName = "TestServicesFile2";
+        private FileServiceManager _servicesManager;
     }
 }

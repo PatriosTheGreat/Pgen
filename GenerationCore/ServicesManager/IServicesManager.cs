@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GenerationCore.ServicesManager
 {
@@ -9,5 +10,7 @@ namespace GenerationCore.ServicesManager
         void DeleteService(string serviceToken);
 
         IEnumerable<ServiceInformation> LoadServices();
+
+        event Action ServicesUpdated;
     }
 }

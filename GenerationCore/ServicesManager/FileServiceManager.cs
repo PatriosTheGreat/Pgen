@@ -4,63 +4,127 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 
 namespace GenerationCore.ServicesManager
 {
-    public sealed class FileServiceManager : IServicesManager
+    public sealed class FileServiceManager : IServicesManager, IFileConfigurableService
     {
-        public FileServiceManager(string servicesFileName)
+        public event Action ServicesUpdated = Actions.DoNothing;
+
+        public FileServiceManager(string defaultFilePath)
         {
-            Contract.Assert(!string.IsNullOrWhiteSpace(servicesFileName));
-
-            _servicesFileName = servicesFileName;
+            Contract.Assert(!string.IsNullOrWhiteSpace(defaultFilePath));
             _serializer = new DataContractSerializer(typeof(List<ServiceInformation>));
+            
+            _fileSystemWatcher = new FileSystemWatcher();
 
-            _services = LoadServices().ToList();
+            _fileSystemWatcher.Changed += (sender, args) =>
+            {
+                ServicesUpdated();
+            };
+            
+            SetFile(defaultFilePath);
+        }
+
+        public void SetFile(string filePath)
+        {
+            _fileSystemWatcher.EnableRaisingEvents = false;
+            _servicesFilePath = filePath;
+            _fileSystemWatcher.Path = Path.GetDirectoryName(Path.GetFullPath(filePath));
+            _fileSystemWatcher.Filter = Path.GetFileName(filePath);
+            _fileSystemWatcher.EnableRaisingEvents = true;
         }
 
         public void SaveService(ServiceInformation service)
         {
             Contract.Assert(service != null);
 
-            _services.Add(service);
-            SaveServicesToFile();
+            var services = LoadServices().Concat(new[] { service });
+            SaveServicesToFile(services);
         }
 
         public void DeleteService(string serviceToken)
         {
             Contract.Assert(!string.IsNullOrWhiteSpace(serviceToken));
-            
-            _services.RemoveAt(_services.FindIndex(information => information.UniqueToken == serviceToken));
-            SaveServicesToFile();
+
+            var services = LoadServices().Where(service => service.UniqueToken != serviceToken);
+            SaveServicesToFile(services);
         }
 
         public IEnumerable<ServiceInformation> LoadServices()
         {
-            if (!File.Exists(_servicesFileName))
+            return DoActionWithServicesFile(() =>
             {
-                return Enumerable.Empty<ServiceInformation>();
-            }
+                if (!File.Exists(_servicesFilePath))
+                {
+                    return Enumerable.Empty<ServiceInformation>();
+                }
 
-            using (var fileSteam = new FileStream(_servicesFileName, FileMode.Open))
-            {
-                var loadedServices = _serializer.ReadObject(fileSteam) as List<ServiceInformation>;
-                _services = loadedServices;
-                return _services;
-            }
+                using (var fileSteam = new FileStream(_servicesFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    return _serializer.ReadObject(fileSteam) as List<ServiceInformation>;
+                }
+            });
         }
 
-        private void SaveServicesToFile()
+        private void SaveServicesToFile(IEnumerable<ServiceInformation> services)
         {
-            File.WriteAllText(_servicesFileName, string.Empty);
-            using (var fileStream = new FileStream(_servicesFileName, FileMode.Create))
+            DoActionWithServicesFile(() =>
             {
-                _serializer.WriteObject(fileStream, _services.ToArray());
-            }
+                File.WriteAllText(_servicesFilePath, string.Empty);
+                using (var fileStream = new FileStream(_servicesFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    _serializer.WriteObject(fileStream, services.ToArray());
+                }
+
+                return 0;
+            });
         }
 
-        private List<ServiceInformation> _services;
+        private T DoActionWithServicesFile<T>(Func<T> action)
+        {
+            _fileSystemWatcher.EnableRaisingEvents = false;
+
+            var result = default(T);
+            lock (_syncRoot)
+            {
+                bool actionFailed;
+
+                var triesCount = 0;
+                do
+                {
+                    try
+                    {
+                        result = action();
+                        actionFailed = false;
+                    }
+                    catch (IOException exception)
+                    {
+                        actionFailed = true;
+
+                        if (triesCount > 30)
+                        {
+                            // ToDo: Выкидывать собственное исключение. 
+                            // ToDo: Добавить перехват и вывод ошибки с возможностью повторить действие.
+                            throw;
+                        }
+
+                        Thread.Sleep(TimeSpan.FromSeconds(1));
+                    }
+
+                    triesCount++;
+                } while (actionFailed);
+            }
+
+            _fileSystemWatcher.EnableRaisingEvents = true;
+            return result;
+        }
+        
         private readonly DataContractSerializer _serializer;
-        private readonly string _servicesFileName;
+        private string _servicesFilePath;
+        private readonly FileSystemWatcher _fileSystemWatcher;
+
+        private readonly object _syncRoot = new object();
     }
 }

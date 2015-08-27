@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GenerationCore.ServicesManager
 {
     public sealed class TestServiceManager : IServicesManager
     {
+        public event Action ServicesUpdated;
+
         public TestServiceManager()
         {
             _services = new List<ServiceInformation>
