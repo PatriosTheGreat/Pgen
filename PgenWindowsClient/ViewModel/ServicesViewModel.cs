@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
@@ -13,10 +14,17 @@ namespace PgenWindowsClient.ViewModel
     public sealed class ServicesViewModel : ViewModelBase
     {
         public ServicesViewModel(
-            IServicesManager servicesManager,
-            IPageNavigator pageNavigator)
+            IServicesManager servicesManager, 
+            IPageNavigator pageNavigator, 
+            PickConfigViewModel pickConfigViewModel)
         {
+            Contract.Assert(servicesManager != null);
+            Contract.Assert(pageNavigator != null);
+            Contract.Assert(pickConfigViewModel != null);
+
             _pageNavigator = pageNavigator;
+            PickConfigViewModel = pickConfigViewModel;
+
             ResetServices(servicesManager.LoadServices());
 
             _servicesListView.Filter = FilterByNameFilter;
@@ -49,6 +57,7 @@ namespace PgenWindowsClient.ViewModel
 
             NavigateToAddService = new LambdaCommand(_ => { _pageNavigator.NavigateToAddServicePage(); });
 
+            // ToDo: Вынести действие в background поток
             DeleteSelectedService = new LambdaCommand(_ =>
             {
                 servicesManager.DeleteService(SelectedService.UniqueToken);
@@ -57,6 +66,7 @@ namespace PgenWindowsClient.ViewModel
                 OnPropertyChanged();
             });
 
+            // ToDo: Вынести действие в background поток
             servicesManager.ServicesUpdated += () =>
             {
                 ResetServices(servicesManager.LoadServices());
@@ -161,6 +171,8 @@ namespace PgenWindowsClient.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        public PickConfigViewModel PickConfigViewModel { get; }
 
         private void ResetServices(IEnumerable<ServiceInformation> newServices)
         {

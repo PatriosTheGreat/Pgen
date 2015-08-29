@@ -1,0 +1,13 @@
+﻿<UserControl x:Class="PgenWindowsClient.View.PickConfigView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             DataContext="PickConfigViewModel"
+             x:Name="PickConfig">
+    <StackPanel Orientation="Horizontal">
+        <TextBox IsReadOnly="True" x:Name="PathToPickedFile" Text="{Binding Path=PathToConfig}" Width="220" />
+        <Button x:Name="PickFileButton" Content="Explore.." Margin="5,0,0,0" Click="ShowFileDialog" />
+    </StackPanel>
+</UserControl>

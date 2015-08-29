@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using GenerationCore;
 using GenerationCore.ServicesManager;
 using Microsoft.Practices.Unity;
 using PgenWindowsClient.View;
@@ -32,9 +33,16 @@ namespace PgenWindowsClient
         {
             _container = new UnityContainer();
 
+            // ToDo: Добавить возможность загружать путь выбранный при предыдущем запуске приложения
+            const string pathToDefaultConfig = "Services.config";
+
+            var fileServiceManager = new FileServiceManager(pathToDefaultConfig);
+            _container.RegisterInstance(typeof (IServicesManager), fileServiceManager);
+            _container.RegisterInstance(typeof(IFileConfigurableService), fileServiceManager);
+
             _container.RegisterInstance(
-                 typeof (IServicesManager), 
-                 new FileServiceManager("Services.config"));
+                typeof (PickConfigViewModel),
+                new PickConfigViewModel(_container.Resolve<IFileConfigurableService>(), pathToDefaultConfig));
 
             // _container.RegisterInstance(typeof(IServicesManager), new TestServiceManager());
             _container.RegisterInstance(typeof(IPageNavigator), this);

@@ -34,6 +34,7 @@ namespace GenerationCore.ServicesManager
             _fileSystemWatcher.Path = Path.GetDirectoryName(Path.GetFullPath(filePath));
             _fileSystemWatcher.Filter = Path.GetFileName(filePath);
             _fileSystemWatcher.EnableRaisingEvents = true;
+            ServicesUpdated();
         }
 
         public void SaveService(ServiceInformation service)

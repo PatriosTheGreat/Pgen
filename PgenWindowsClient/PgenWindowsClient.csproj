@@ -90,10 +90,14 @@
     <Compile Include="LambdaCommand.cs" />
     <Compile Include="Masking.cs" />
     <Compile Include="ViewModel\AddServiceViewModel.cs" />
+    <Compile Include="ViewModel\PickConfigViewModel.cs" />
     <Compile Include="ViewModel\ServicesViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\AddServiceView.xaml.cs">
       <DependentUpon>AddServiceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PickConfigView.xaml.cs">
+      <DependentUpon>PickConfigView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ServicesView.xaml.cs">
       <DependentUpon>ServicesView.xaml</DependentUpon>
@@ -131,6 +135,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\AddServiceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PickConfigView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

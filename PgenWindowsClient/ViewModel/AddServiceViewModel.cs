@@ -13,6 +13,7 @@ namespace PgenWindowsClient.ViewModel
             _servicesManager = servicesManager;
             _navigator = navigator;
 
+            // ToDo: Вынести действие в background поток, добавить бегунок
             Submit = new LambdaCommand(_ =>
             {
                 _servicesManager.SaveService(
