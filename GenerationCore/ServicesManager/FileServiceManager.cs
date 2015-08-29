@@ -19,11 +19,10 @@ namespace GenerationCore.ServicesManager
             
             _fileSystemWatcher = new FileSystemWatcher();
 
-            _fileSystemWatcher.Changed += (sender, args) =>
-            {
-                ServicesUpdated();
-            };
-            
+            _fileSystemWatcher.Deleted += WatchedFileChanged;
+            _fileSystemWatcher.Created += WatchedFileChanged;
+            _fileSystemWatcher.Changed += WatchedFileChanged;
+
             SetFile(defaultFilePath);
         }
 
@@ -67,6 +66,12 @@ namespace GenerationCore.ServicesManager
                     return _serializer.ReadObject(fileSteam) as List<ServiceInformation>;
                 }
             });
+        }
+
+
+        private void WatchedFileChanged(object sender, FileSystemEventArgs e)
+        {
+            ServicesUpdated();
         }
 
         private void SaveServicesToFile(IEnumerable<ServiceInformation> services)
