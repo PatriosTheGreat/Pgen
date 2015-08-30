@@ -50,6 +50,7 @@
     <Compile Include="Actions.cs" />
     <Compile Include="IFileConfigurableService.cs" />
     <Compile Include="PasswordRestriction.cs" />
+    <Compile Include="PersistenceSettingManager.cs" />
     <Compile Include="SecurityStringHelper.cs" />
     <Compile Include="ServiceInformation.cs" />
     <Compile Include="ServicePasswordGenerator.cs" />

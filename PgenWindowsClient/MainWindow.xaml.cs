@@ -32,17 +32,15 @@ namespace PgenWindowsClient
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             _container = new UnityContainer();
-
-            // ToDo: Добавить возможность загружать путь выбранный при предыдущем запуске приложения
-            const string pathToDefaultConfig = "Services.config";
-
-            var fileServiceManager = new FileServiceManager(pathToDefaultConfig);
-            _container.RegisterInstance(typeof (IServicesManager), fileServiceManager);
+            
+            var persistenceSettingManager = new PersistenceSettingManager();
+            var fileServiceManager = new FileServiceManager(persistenceSettingManager);
+            _container.RegisterInstance(typeof(IServicesManager), fileServiceManager);
             _container.RegisterInstance(typeof(IFileConfigurableService), fileServiceManager);
 
             _container.RegisterInstance(
                 typeof (PickConfigViewModel),
-                new PickConfigViewModel(_container.Resolve<IFileConfigurableService>(), pathToDefaultConfig));
+                new PickConfigViewModel(_container.Resolve<IFileConfigurableService>(), persistenceSettingManager));
 
             // _container.RegisterInstance(typeof(IServicesManager), new TestServiceManager());
             _container.RegisterInstance(typeof(IPageNavigator), this);

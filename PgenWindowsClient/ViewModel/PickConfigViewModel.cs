@@ -7,10 +7,10 @@ namespace PgenWindowsClient.ViewModel
     {
         public PickConfigViewModel(
             IFileConfigurableService fileConfigurableService,
-            string defaultConfigPath = "")
+            PersistenceSettingManager persistenceSettingManager)
         {
             _fileConfigurableService = fileConfigurableService;
-            PathToConfig = Path.GetFullPath(defaultConfigPath);
+            PathToConfig = Path.GetFullPath(persistenceSettingManager.PathToConfig);
         }
 
         public string PathToConfig

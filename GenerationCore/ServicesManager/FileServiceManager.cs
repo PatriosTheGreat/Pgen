@@ -12,18 +12,18 @@ namespace GenerationCore.ServicesManager
     {
         public event Action ServicesUpdated = Actions.DoNothing;
 
-        public FileServiceManager(string defaultFilePath)
+        public FileServiceManager(PersistenceSettingManager persistenceSettingManager)
         {
-            Contract.Assert(!string.IsNullOrWhiteSpace(defaultFilePath));
             _serializer = new DataContractSerializer(typeof(List<ServiceInformation>));
-            
+            _persistenceSettingManager = persistenceSettingManager;
+
             _fileSystemWatcher = new FileSystemWatcher();
 
             _fileSystemWatcher.Deleted += WatchedFileChanged;
             _fileSystemWatcher.Created += WatchedFileChanged;
             _fileSystemWatcher.Changed += WatchedFileChanged;
 
-            SetFile(defaultFilePath);
+            SetFile(_persistenceSettingManager.PathToConfig);
         }
 
         public void SetFile(string filePath)
@@ -32,6 +32,7 @@ namespace GenerationCore.ServicesManager
             _servicesFilePath = filePath;
             _fileSystemWatcher.Path = Path.GetDirectoryName(Path.GetFullPath(filePath));
             _fileSystemWatcher.Filter = Path.GetFileName(filePath);
+            _persistenceSettingManager.PathToConfig = filePath;
             _fileSystemWatcher.EnableRaisingEvents = true;
             ServicesUpdated();
         }
@@ -132,5 +133,6 @@ namespace GenerationCore.ServicesManager
         private readonly FileSystemWatcher _fileSystemWatcher;
 
         private readonly object _syncRoot = new object();
+        private readonly PersistenceSettingManager _persistenceSettingManager;
     }
 }
