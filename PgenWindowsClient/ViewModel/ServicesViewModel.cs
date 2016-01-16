@@ -39,19 +39,13 @@ namespace PgenWindowsClient.ViewModel
                 parameter =>
                 {
                     var passwordProvider = parameter as IPasswordProvider;
-                    if (passwordProvider == null || 
-                        SelectedService == null ||
-                        passwordProvider.Password.Length < 1)
-                    {
-                        return;
-                    }
-
                     SelectedServicePassword = ServicePasswordGenerator.GeneratePassword(
                         SelectedService,
-                        passwordProvider.Password);
+                        passwordProvider?.Password);
 
-                    passwordProvider.Clear();
-                });
+                    passwordProvider?.Clear();
+                },
+                parameter => SelectedService != null && (parameter as IPasswordProvider)?.Password.Length > 0);
 
             CopyServicePassword = new LambdaCommand(_ => { Clipboard.SetText(SelectedServicePassword); });
 

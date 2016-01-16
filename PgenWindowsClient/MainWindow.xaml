@@ -7,5 +7,5 @@
         Height="{StaticResource DefaultHeight}" 
         Width="{StaticResource DefaultPageWidth}"
         Icon="ApplicationIcon.png">
-    <Frame Name="MainFrame" Width="{StaticResource DefaultPageWidth}" Height="{StaticResource DefaultPageHeight}" NavigationUIVisibility="Hidden" />
+    <Frame Name="MainFrame" NavigationUIVisibility="Hidden" />
 </Window>

@@ -33,8 +33,8 @@ namespace PgenWindowsClient.ViewModel
             });
 
             ServiceName = "DefaultName";
-            PasswordMinBounder = PasswordRestriction.PasswordMinBounder;
-            PasswordMaxBounder = PasswordRestriction.PasswordMaxBounder;
+            PasswordMinBounder = PasswordRestriction.DefaultMinLength;
+            PasswordMaxBounder = PasswordRestriction.DefaultMaxLength;
             AllowLowLatin = true;
             AllowUpperLatin = true;
         }

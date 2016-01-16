@@ -8,8 +8,8 @@ namespace GenerationCore
     {
         public PasswordRestriction(
            SymbolsType acceptedTypes,
-           int passwordMinLength = PasswordMinBounder,
-           int passwordMaxLength = PasswordMaxBounder)
+           int passwordMinLength = DefaultMinLength,
+           int passwordMaxLength = DefaultMaxLength)
         {
             Contract.Assert(passwordMinLength > 0);
             Contract.Assert(passwordMaxLength > passwordMinLength);
@@ -29,7 +29,7 @@ namespace GenerationCore
         [DataMember]
         public SymbolsType AcceptedTypes { get; private set; }
 
-        public const int PasswordMinBounder = 3;
-        public const int PasswordMaxBounder = 25;
+        public const int DefaultMinLength = 3;
+        public const int DefaultMaxLength = 25;
     }
 }
