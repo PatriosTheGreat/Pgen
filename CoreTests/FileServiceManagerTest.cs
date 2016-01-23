@@ -15,7 +15,8 @@ namespace CoreTests
         {
             File.Delete(TestFileName);
             File.Delete(OtherFileName);
-            _servicesManager = new FileServiceManager(TestFileName);
+            _servicesManager = new FileServiceManager(
+                new PersistenceSettingManager { PathToConfig = TestFileName });
         }
 
         [TestMethod]
@@ -31,7 +32,7 @@ namespace CoreTests
 
             var loadedServices = _servicesManager.LoadServices().ToArray();
 
-            Assert.AreEqual(1, loadedServices.Count());
+            Assert.AreEqual(1, loadedServices.Length);
             Assert.AreEqual(_defaultService.UniqueToken, loadedServices.First().UniqueToken);
         }
 
@@ -40,12 +41,13 @@ namespace CoreTests
         {
             _servicesManager.SaveService(_defaultService);
 
-            var anotherServiceManager = new FileServiceManager(TestFileName);
+            var anotherServiceManager = new FileServiceManager(
+                new PersistenceSettingManager { PathToConfig = TestFileName });
             anotherServiceManager.SaveService(_otherService);
 
             var loadedServices = anotherServiceManager.LoadServices().ToArray();
 
-            Assert.AreEqual(loadedServices.Count(), 2);
+            Assert.AreEqual(loadedServices.Length, 2);
             Assert.IsTrue(loadedServices.Any(
                 loadedService => loadedService.UniqueToken == _defaultService.UniqueToken));
         }
@@ -57,12 +59,12 @@ namespace CoreTests
             _servicesManager.SaveService(_otherService);
             
             var loadedServices = _servicesManager.LoadServices().ToArray();
-            Assert.AreEqual(loadedServices.Count(), 2);
+            Assert.AreEqual(loadedServices.Length, 2);
 
             _servicesManager.DeleteService(_otherService.UniqueToken);
 
             loadedServices = _servicesManager.LoadServices().ToArray();
-            Assert.AreEqual(loadedServices.Count(), 1);
+            Assert.AreEqual(loadedServices.Length, 1);
             Assert.AreEqual(loadedServices.Single().UniqueToken, _defaultService.UniqueToken);
         }
 
@@ -73,7 +75,7 @@ namespace CoreTests
             _servicesManager.SetFile(OtherFileName);
 
             var loadedServices = _servicesManager.LoadServices().ToArray();
-            Assert.AreEqual(loadedServices.Count(), 0);
+            Assert.AreEqual(loadedServices.Length, 0);
         }
 
         [TestMethod]
@@ -90,7 +92,8 @@ namespace CoreTests
         [TestMethod]
         public void FileManagerShouldLoadNewServicesAfter()
         {
-            var otherServiceManager = new FileServiceManager(TestFileName);
+            var otherServiceManager = new FileServiceManager(
+                new PersistenceSettingManager { PathToConfig = TestFileName });
             
             _servicesManager.SaveService(_otherService);
             otherServiceManager.SaveService(_defaultService);
