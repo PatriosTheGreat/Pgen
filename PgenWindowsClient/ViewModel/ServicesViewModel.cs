@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -28,13 +29,7 @@ namespace PgenWindowsClient.ViewModel
             ResetServices(servicesManager.LoadServices());
 
             _servicesListView.Filter = FilterByNameFilter;
-
-            _services.CollectionChanged += (sender, args) =>
-            {
-                _servicesListView.Refresh();
-                OnPropertyChanged();
-            };
-
+            
             GenerateServicePassword = new LambdaCommand(
                 parameter =>
                 {
@@ -170,9 +165,21 @@ namespace PgenWindowsClient.ViewModel
 
         private void ResetServices(IEnumerable<ServiceInformation> newServices)
         {
+            if (_services != null)
+            {
+                _services.CollectionChanged -= OnServicesChanged;
+            }
+
             _services = new ObservableCollection<ServiceInformation>(newServices);
+            _services.CollectionChanged += OnServicesChanged;
 
             FilteredServices = CollectionViewSource.GetDefaultView(_services);
+        }
+
+        private void OnServicesChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            _servicesListView.Refresh();
+            OnPropertyChanged();
         }
 
         private bool FilterByNameFilter(object serviceObject)
